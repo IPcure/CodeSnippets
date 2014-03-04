@@ -12,7 +12,7 @@
 #include <fcntl.h>
 
 static unsigned short checksum ( const void * header, int length );
-static int disable_kernel_auto_icmp_reply ( );
+static int toggle_kernel_auto_icmp_reply ( int yes );
 
 int main ( )
 {
@@ -22,14 +22,16 @@ int main ( )
         return -1;
     }
 
-    if ( disable_kernel_auto_icmp_reply ( ) )
+    int auto_icmp_disabled = 0;
+
+    if ( toggle_kernel_auto_icmp_reply ( 0 ) )
     {
         printf ( "Kernel auto ICMP replies sucessfully disabled.\n" );
+        int auto_icmp_disabled = 1;
     }
     else
     {
-        printf ( "Unable to disable kernel auto ICMP replies.\n" );
-        return -1;
+        printf ( "Unable to disable kernel auto ICMP replies. It doesn't matter. Maybe you are on a Mac, and don't have a '/proc' partition.\n" );
     }
 
     // We create the socket
@@ -113,6 +115,18 @@ int main ( )
 
     // We close the socket
     close ( sock );
+
+    if ( auto_icmp_disabled == 1 )
+    {
+        if ( toggle_kernel_auto_icmp_reply ( 1 ) )
+        {
+            printf ( "Kernel auto ICMP replies sucessfully re-enabled.\n" );
+        }
+        else
+        {
+            printf ( "Unable to re-enable kernel auto ICMP replies. It doesn't matter. Maybe you are on a Mac, and don't have a '/proc' partition.\n" );
+        }
+    }
     return 0;
 }
 
@@ -138,7 +152,7 @@ static unsigned short checksum ( const void * header, int length )
     return ( unsigned short ) ~sum;
 }
 
-static int disable_kernel_auto_icmp_reply ( )
+static int toggle_kernel_auto_icmp_reply ( int yes )
 {
     int fd = open ( "/proc/sys/net/ipv4/icmp_echo_ignore_all", O_WRONLY );
     if ( fd == -1 )
@@ -146,7 +160,7 @@ static int disable_kernel_auto_icmp_reply ( )
         return 0;
     }
 
-    int res = write ( fd, "1", 1 );
+    int res = write ( fd,  ( yes == 1 ? "0" : "1" ), 1 );
     close ( fd );
 
     if ( res == -1 )
