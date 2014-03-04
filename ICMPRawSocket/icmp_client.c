@@ -14,12 +14,18 @@ static unsigned short checksum ( const void * header, int length );
 
 int main ( )
 {
+    if ( getuid ( ) != 0 )
+    {
+        printf ( "Please launch me as root.\n" );
+        return EXIT_FAILURE;
+    }
+
     // We create the socket
     int sock = socket ( AF_INET, SOCK_RAW, IPPROTO_ICMP );
     if ( sock < 0 )
     {
         printf ( "Error when creating socket.\n" );
-        return -1;
+        return EXIT_FAILURE;
     }
 
     // We set up desination info
@@ -65,7 +71,7 @@ int main ( )
 
     // We close the socket
     close ( sock );
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 /**

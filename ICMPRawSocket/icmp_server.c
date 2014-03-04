@@ -33,7 +33,7 @@ int main ( )
     if ( getuid ( ) != 0 )
     {
         printf ( "Please launch me as root.\n" );
-        return -1;
+        return EXIT_FAILURE;
     }
 
     if ( toggle_kernel_auto_icmp_reply ( 0 ) )
@@ -48,7 +48,7 @@ int main ( )
 
     server ( );
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 /**
