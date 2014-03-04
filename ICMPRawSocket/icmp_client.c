@@ -2,11 +2,13 @@
 #include <netinet/in.h>
 #include <linux/ip.h>
 #include <linux/icmp.h>
-#include <stdlib.h>
+#include <arpa/inet.h>
 
+#include <stdlib.h>
 #include <string.h> /* memcpy, strlen */
 #include <stdio.h>
 #include <errno.h>
+#include <unistd.h>
 
 static unsigned short checksum ( const void * header, int length );
 
@@ -66,6 +68,17 @@ int main ( )
     return 0;
 }
 
+/**
+ * This allow us to automatically compute the IP & ICMP checksum.
+ * Both, IP packets & ICMP packets have a checksum, but the algorithm
+ * is the same for both!
+ * WARNING: call me with the checksum field set to 0.
+ *
+ * @param header The header (IP or ICMP) you want to compute the checksum of
+ * @param length The size of this header
+ *
+ * @return The IP or ICMP checksum
+ */
 static unsigned short checksum ( const void * header, int length )
 {
     int sum = 0;
