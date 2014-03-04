@@ -11,12 +11,12 @@ default: $(BINDIR)$(EXECLIENT) $(BINDIR)$(EXESERVER)
 $(BINDIR)$(EXECLIENT): icmp_client.c
 	@echo "Building client"
 	@mkdir -p $(BINDIR)
-	@gcc -o $@ $^
+	@gcc -Wall -Wextra -Werror -o $@ $^
 
 $(BINDIR)$(EXESERVER): icmp_server.c
 	@echo "Building server"
 	@mkdir -p $(BINDIR)
-	@gcc -o $@ $^
+	@gcc -Wall -Wextra -Werror -o $@ $^
 
 
 clean:
